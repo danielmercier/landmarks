@@ -31,8 +31,7 @@ let error loc code =
     | `Payload_not_an_expression -> "payload is not an expression"
     | `Provide_a_name -> "this landmark annotation requires a name argument"
   in
-  Location.Error.raise (Location.Error.make ~loc ~sub:[]
-                          (Printf.sprintf "ppx_landmark: %s" (message code)))
+  Location.raise_errorf ~loc "ppx_landmark: %s" (message code)
 
 let landmark_hash = ref ""
 let landmark_id = ref 0
@@ -55,7 +54,7 @@ type landmark =
 
 let get_payload key = function
     {attr_name = {txt; _}; attr_payload = PStr [{pstr_desc = Pstr_eval ({
-        pexp_desc = Pexp_constant (Pconst_string (x, _, None)); _
+        pexp_desc = Pexp_constant (Pconst_string (x, None)); _
       }, _); _}]; _} when txt = key ->
       Some (Some (Constant x))
   | {attr_name = {txt; _}; attr_payload = PStr [{pstr_desc = Pstr_eval (expression, _); _}]; _} when txt = key ->
